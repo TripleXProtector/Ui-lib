@@ -338,10 +338,14 @@ end
 
 function library:Window(Info)
 Info.Text = Info.Text or "Window"
+
 local Theme = Themes[library.Theme]
+
 if Theme == nil then
-error("There's no theme called: "..library.Theme, 0)
+    error("There's no theme called: "..library.Theme, 0)
 end
+
+local window = {}
 
 local unnamed = Instance.new("ScreenGui")
 unnamed.Name = HttpService:GenerateGUID(true)
@@ -356,7 +360,7 @@ shadow.Parent = CoreGui
 
 local mainShadow = Instance.new("ImageLabel")
 mainShadow.Name = "MainShadow"
---mainShadow.Image = getcustomasset("Unnamed/Shadow.png")
+mainShadow.Image = getcustomasset("Unnamed/Shadow.png")
 mainShadow.ImageColor3 = Theme.Shadow
 mainShadow.ImageTransparency = 0.2
 mainShadow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -392,35 +396,35 @@ local dragStart
 local startPos
 
 local function update(input)
-local delta = input.Position - dragStart
-main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-mainShadow.Position = UDim2.new(startPos.X.Scale, (startPos.X.Offset + delta.X) - 10, startPos.Y.Scale, (startPos.Y.Offset + delta.Y) - 10)
+    local delta = input.Position - dragStart
+    main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    mainShadow.Position = UDim2.new(startPos.X.Scale, (startPos.X.Offset + delta.X) - 10, startPos.Y.Scale, (startPos.Y.Offset + delta.Y) - 10)
 end
 
 topbar.InputBegan:Connect(function(input)
-if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-dragging = true
-dragStart = input.Position
-startPos = main.Position
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
 
-input.Changed:Connect(function()
-if input.UserInputState == Enum.UserInputState.End then
-dragging = false
-end
-end)
-end
+        input.Changed:Connect(function()
+        	if input.UserInputState == Enum.UserInputState.End then
+        		dragging = false
+        	end
+        end)
+    end
 end)
 
 topbar.InputChanged:Connect(function(input)
-if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-dragInput = input
-end
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-if input == dragInput and dragging then
-update(input)
-end
+    if input == dragInput and dragging then
+        update(input)
+    end
 end)
 
 local uICorner1 = Instance.new("UICorner")
@@ -463,17 +467,17 @@ closeButton.Size = UDim2.new(0, 17, 0, 17)
 closeButton.Parent = topbar
 
 closeButton.MouseEnter:Connect(function()
-TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 66, 66)}):Play()
+    TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 66, 66)}):Play()
 end)
 
 closeButton.MouseLeave:Connect(function()
-TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
 end)
 
 closeButton.MouseButton1Click:Connect(function()
-unnamed:Destroy()
-shadow:Destroy()
-notifications:Destroy()
+    unnamed:Destroy()
+    shadow:Destroy()
+    notifications:Destroy()
 end)
 
 local minimizeButton = Instance.new("ImageButton")
@@ -487,43 +491,88 @@ minimizeButton.Size = UDim2.new(0, 17, 0, 17)
 minimizeButton.Parent = topbar
 
 minimizeButton.MouseEnter:Connect(function()
-TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Theme.Highlight}):Play()
+    TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Theme.Highlight}):Play()
 end)
 
 minimizeButton.MouseLeave:Connect(function()
-TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
 end)
 
---Custom Minimize Feature
-local ImageToMinimize = Instance.new("ImageButton")
---ImageToMinimize.Image = "rbxassetid://96693470807050" -- Palitan mo to sa image id mo
-ImageToMinimize.Name = "ImageToMinimize"
-ImageToMinimize.Size = UDim2.new(0,50,0,50)
-ImageToMinimize.BackgroundColor3 = Color3.fromRGB(255,255,255)
-ImageToMinimize.BackgroundTransparency = 1
-ImageToMinimize.Position = UDim2.new(0.5,0,0.5,0) -- Pwede mo palitan kung saan mo gusto
-ImageToMinimize.ZIndex = 5
-ImageToMinimize.Visible = false -- Naka hide by default
-ImageToMinimize.Parent = CoreGui
-
 local Minimized = false
-local function ToggleWindowVisibility()
-Minimized = not Minimized
-unnamed.Enabled = not Minimized
-shadow.Enabled = not Minimized
-ImageToMinimize.Visible = Minimized
-notifications:Destroy()
-end
 
-minimizeButton.MouseButton1Click:Connect(ToggleWindowVisibility)
-
-ImageToMinimize.MouseButton1Click:Connect(ToggleWindowVisibility)
+minimizeButton.MouseButton1Click:Connect(function()
+    Minimized = not Minimized
+   
+    if Minimized then
+        topbar.TopbarLine.Visible = false
+        mainShadow.Visible = false
+    end
+    TweenService:Create(main, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {Size = Minimized and UDim2.new(0, 500,0, 34) or UDim2.new(0, 500,0, 350)}):Play()
+    if not Minimized then
+        wait(.125)
+        mainShadow.Visible = true
+        topbar.TopbarLine.Visible = true
+    end
+    for _,v in next, main:GetChildren() do
+        if v.Name ~= "Topbar" and v.ClassName == "Frame" or v.ClassName == "ScrollingFrame" then
+            v.Visible = not Minimized
+        end
+    end
+end)
 
 local uIStroke = Instance.new("UIStroke")
 uIStroke.Name = "UIStroke"
 uIStroke.Color = Theme.MainUIStroke
 uIStroke.Parent = main
 
+local tabContainer = Instance.new("Frame")
+tabContainer.Name = "TabContainer"
+tabContainer.BackgroundColor3 = Theme.TabContainer
+tabContainer.BorderSizePixel = 0
+tabContainer.Position = UDim2.new(-0.012, 6, 0.0971, 0)
+tabContainer.Size = UDim2.new(0, 131, 0, 316)
+tabContainer.Parent = main
+
+local tabContainerLine = Instance.new("Frame")
+tabContainerLine.Name = "TabContainerLine"
+tabContainerLine.AnchorPoint = Vector2.new(1, 0)
+tabContainerLine.BackgroundColor3 = Theme.Lines
+tabContainerLine.BorderSizePixel = 0
+tabContainerLine.Position = UDim2.new(1, 0, 0, 0)
+tabContainerLine.Size = UDim2.new(0, 1, 0, 316)
+tabContainerLine.ZIndex = 2
+tabContainerLine.Parent = tabContainer
+
+local tabContainerScrolling = Instance.new("ScrollingFrame")
+tabContainerScrolling.Name = "TabContainerScrolling"
+tabContainerScrolling.AutomaticCanvasSize = Enum.AutomaticSize.Y
+tabContainerScrolling.CanvasSize = UDim2.new()
+tabContainerScrolling.ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0)
+tabContainerScrolling.ScrollBarThickness = 0
+tabContainerScrolling.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+tabContainerScrolling.BackgroundTransparency = 1
+tabContainerScrolling.BorderSizePixel = 0
+tabContainerScrolling.Position = UDim2.new(0, 0, 0, 6)
+tabContainerScrolling.Size = UDim2.new(0, 128, 0, 304)
+tabContainerScrolling.Parent = tabContainer
+
+local uIListLayout = Instance.new("UIListLayout")
+uIListLayout.Name = "UIListLayout"
+uIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+uIListLayout.Parent = tabContainerScrolling
+
+local containers = Instance.new("ScrollingFrame")
+containers.Name = "Containers"
+containers.AutomaticCanvasSize = Enum.AutomaticSize.Y
+containers.CanvasSize = UDim2.new()
+containers.ScrollBarThickness = 0
+containers.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+containers.BackgroundTransparency = 1
+containers.BorderSizePixel = 0
+containers.Position = UDim2.new(0.262, 1, 0.097, 0)
+containers.Selectable = false
+containers.Size = UDim2.new(0, 368, 0, 310)
+containers.Parent = main
 
 function window:Tab(Info)
 Info.Text = Info.Text or "Tab"
