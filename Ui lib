@@ -1,6 +1,6 @@
 local library = {
     Flags = {},
-    SectionsOpened = true,
+    SectionsOpened = false,
     Theme = "Dark"
 }
 library.flags = library.Flags
@@ -125,16 +125,17 @@ local getcustomasset = getcustomasset or getsynasset
 local isfolder = isfolder or syn_isfolder or is_folder
 local makefolder = makefolder or make_folder or createfolder or create_folder
 
-if not isfolder("luna") then
-makefolder("luna")   
-local Shadow = request({Url = "https://raw.githubusercontent.com/Brion312/EEE/main/Icons/UnnamedShadow.png", Method = "GET"})
-writefile("Xoura/Shadow.png", Shadow.Body)
+if not isfolder("Unnamed") then
+makefolder("Unnamed")
+    
+local Shadow = request({Url = "https://raw.githubusercontent.com/Rain-Design/Unnamed/main/Icons/UnnamedShadow.png", Method = "GET"})
+writefile("Unnamed/Shadow.png", Shadow.Body)
 
-local Chevron = request({Url = "https://raw.githubusercontent.com/Brion312/EEE/main/Icons/Chevron.png", Method = "GET"})
-writefile("Xoura/Chevron.png", Chevron.Body)
+local Chevron = request({Url = "https://raw.githubusercontent.com/Rain-Design/Unnamed/main/Icons/Chevron.png", Method = "GET"})
+writefile("Unnamed/Chevron.png", Chevron.Body)
 
-local Circle = request({Url = "https://raw.githubusercontent.com/Brion312/EEE/main/Icons/Circle.png", Method = "GET"})
-writefile("Xoura/Circle.png", Circle.Body)
+local Circle = request({Url = "https://raw.githubusercontent.com/Rain-Design/Unnamed/main/Icons/Circle.png", Method = "GET"})
+writefile("Unnamed/Circle.png", Circle.Body)
 end
 
 local SelectedTab = nil
@@ -346,10 +347,10 @@ end
 
 local window = {}
 
-local Xoura = Instance.new("ScreenGui")
-Xoura.Name = HttpService:GenerateGUID(true)
-Xoura.ZIndexBehavior = Enum.ZIndexBehavior.Global
-Xoura.Parent = CoreGui
+local unnamed = Instance.new("ScreenGui")
+unnamed.Name = HttpService:GenerateGUID(true)
+unnamed.ZIndexBehavior = Enum.ZIndexBehavior.Global
+unnamed.Parent = CoreGui
 
 local shadow = Instance.new("ScreenGui")
 shadow.Name = HttpService:GenerateGUID(true)
@@ -359,7 +360,7 @@ shadow.Parent = CoreGui
 
 local mainShadow = Instance.new("ImageLabel")
 mainShadow.Name = "MainShadow"
-mainShadow.Image = getcustomasset("Xoura/Shadow.png")
+mainShadow.Image = getcustomasset("Unnamed/Shadow.png")
 mainShadow.ImageColor3 = Theme.Shadow
 mainShadow.ImageTransparency = 0.2
 mainShadow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -374,7 +375,7 @@ main.BackgroundColor3 = Theme.Main
 main.BorderSizePixel = 0
 main.Position = UDim2.new(0.345, 0, 0.291, 0)
 main.Size = UDim2.new(0, 500, 0, 350)
-main.Parent = Xoura
+main.Parent = unnamed
 main.ClipsDescendants = true
 
 local uICorner = Instance.new("UICorner")
@@ -474,7 +475,7 @@ closeButton.MouseLeave:Connect(function()
 end)
 
 closeButton.MouseButton1Click:Connect(function()
-    Xoura:Destroy()
+    unnamed:Destroy()
     shadow:Destroy()
     notifications:Destroy()
 end)
@@ -767,7 +768,7 @@ sectionButton.ZIndex = Sections + 1
 
 local sectionIcon = Instance.new("ImageLabel")
 sectionIcon.Name = "SectionIcon"
-sectionIcon.Image = getcustomasset("Xoura/Chevron.png")
+sectionIcon.Image = getcustomasset("Unnamed/Chevron.png")
 sectionIcon.ImageColor3 = Theme.SectionText
 sectionIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 sectionIcon.BackgroundTransparency = 1
@@ -1068,7 +1069,7 @@ sliderInnerUICorner.Parent = sliderInner
 
 local dragIcon = Instance.new("ImageLabel")
 dragIcon.Name = "dragIcon"
-dragIcon.Image = getcustomasset("Xoura/Circle.png")
+dragIcon.Image = getcustomasset("Unnamed/Circle.png")
 dragIcon.ImageColor3 = Theme.ItemText
 dragIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 dragIcon.BackgroundTransparency = 1
@@ -1139,47 +1140,6 @@ dragButton.MouseButton1Down:Connect(function() -- Skidded from material ui hehe,
 		end
 	end)
 end)
-end
-
-function sectiontable:Label(Info)
-    Info.Text = Info.Text or "Label"
-    Info.Flag = Info.Flag or nil
-    local Theme = Themes[library.Theme] -- Get the current theme colors
-    local insidelabel = {}
-
-    local label = Instance.new("Frame")
-    label.Name = "Label"
-    label.BackgroundColor3 = Theme.ItemFrame -- Match the section item style
-    label.BackgroundTransparency = 0.1 -- Slight transparency for a smooth look
-    label.Size = UDim2.new(0, 175, 0, 28)
-    label.Parent = itemContainer  -- Attach to the section container
-
-    local labelUIStroke = Instance.new("UIStroke")
-    labelUIStroke.Name = "LabelUIStroke"
-    labelUIStroke.Color = Theme.ItemUIStroke -- Match stroke color of other elements
-    labelUIStroke.Parent = label
-
-    local labelText = Instance.new("TextLabel")
-    labelText.Name = "LabelText"
-    labelText.Font = Enum.Font.GothamBold
-    labelText.Text = Info.Text
-    labelText.TextColor3 = Theme.ItemText -- Match text color with theme
-    labelText.TextSize = 12
-    labelText.TextXAlignment = Enum.TextXAlignment.Left
-    labelText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    labelText.BackgroundTransparency = 1
-    labelText.Size = UDim2.new(1, -10, 1, 0) -- Align text properly
-    labelText.Position = UDim2.new(0, 6, 0, 0) -- Adjust padding from left side
-    labelText.Parent = label
-
-function insidelabel:Set(SetInfo)
-    SetInfo.Text = SetInfo.Text or labelText.Text
-    SetInfo.Color = SetInfo.Color or labelText.TextColor3  
-
-    labelText.Text = SetInfo.Text
-    labelText.TextColor3 = SetInfo.Color
-    end      
-    return insidelabel
 end
 
 function sectiontable:Input(Info)
@@ -1301,7 +1261,7 @@ dropdownUIStroke.Parent = dropdownFrame
 
 local dropdownIcon = Instance.new("ImageLabel")
 dropdownIcon.Name = "dropdownIcon"
-dropdownIcon.Image = getcustomasset("Xoura/Chevron.png")
+dropdownIcon.Image = getcustomasset("Unnamed/Chevron.png")
 dropdownIcon.ImageColor3 = Theme.ItemText
 dropdownIcon.Active = true
 dropdownIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1611,7 +1571,7 @@ toggleOuterUICorner.Parent = toggleOuter
 
 local toggleInner = Instance.new("ImageLabel")
 toggleInner.Name = "toggleInner"
-toggleInner.Image = getcustomasset("Xoura/Circle.png")
+toggleInner.Image = getcustomasset("Unnamed/Circle.png")
 toggleInner.ImageColor3 = Theme.ToggleInner
 toggleInner.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 toggleInner.BackgroundTransparency = 1
