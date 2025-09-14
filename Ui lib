@@ -496,7 +496,7 @@ end)
 
 --Custom Minimize Feature
 local ImageToMinimize = Instance.new("ImageButton")
---ImageToMinimize.Image = "rbxassetid://7072718362" -- Palitan mo to sa image id mo
+--ImageToMinimize.Image = "rbxassetid://96693470807050" -- Palitan mo to sa image id mo
 ImageToMinimize.Name = "ImageToMinimize"
 ImageToMinimize.Size = UDim2.new(0,50,0,50)
 ImageToMinimize.BackgroundColor3 = Color3.fromRGB(255,255,255)
