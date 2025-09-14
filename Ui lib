@@ -525,9 +525,6 @@ function library:Window(Info)
     uIStroke.Name = "UIStroke"
     uIStroke.Color = Theme.MainUIStroke
     uIStroke.Parent = main
-    
-    return window
-end
 
 function window:Tab(Info)
 Info.Text = Info.Text or "Tab"
