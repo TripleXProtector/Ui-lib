@@ -337,194 +337,193 @@ end
 end
 
 function library:Window(Info)
-    Info.Text = Info.Text or "Window"
-    local Theme = Themes[library.Theme]
-    if Theme == nil then
-        error("There's no theme called: "..library.Theme, 0)
-    end
+Info.Text = Info.Text or "Window"
+local Theme = Themes[library.Theme]
+if Theme == nil then
+error("There's no theme called: "..library.Theme, 0)
+end
 
-    local window = {}
+local unnamed = Instance.new("ScreenGui")
+unnamed.Name = HttpService:GenerateGUID(true)
+unnamed.ZIndexBehavior = Enum.ZIndexBehavior.Global
+unnamed.Parent = CoreGui
 
-    local unnamed = Instance.new("ScreenGui")
-    unnamed.Name = HttpService:GenerateGUID(true)
-    unnamed.ZIndexBehavior = Enum.ZIndexBehavior.Global
-    unnamed.Parent = CoreGui
+local shadow = Instance.new("ScreenGui")
+shadow.Name = HttpService:GenerateGUID(true)
+shadow.DisplayOrder = -1
+shadow.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+shadow.Parent = CoreGui
 
-    local shadow = Instance.new("ScreenGui")
-    shadow.Name = HttpService:GenerateGUID(true)
-    shadow.DisplayOrder = -1
-    shadow.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    shadow.Parent = CoreGui
+local mainShadow = Instance.new("ImageLabel")
+mainShadow.Name = "MainShadow"
+--mainShadow.Image = getcustomasset("Unnamed/Shadow.png")
+mainShadow.ImageColor3 = Theme.Shadow
+mainShadow.ImageTransparency = 0.2
+mainShadow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+mainShadow.BackgroundTransparency = 1
+mainShadow.Position = UDim2.new(0.339, 0, 0.279, 0)
+mainShadow.Size = UDim2.new(0, 520, 0, 370)
+mainShadow.Parent = shadow
 
-    local mainShadow = Instance.new("ImageLabel")
-    mainShadow.Name = "MainShadow"
-    --mainShadow.Image = getcustomasset("Unnamed/Shadow.png")
-    mainShadow.ImageColor3 = Theme.Shadow
-    mainShadow.ImageTransparency = 0.2
-    mainShadow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    mainShadow.BackgroundTransparency = 1
-    mainShadow.Position = UDim2.new(0.339, 0, 0.279, 0)
-    mainShadow.Size = UDim2.new(0, 520, 0, 370)
-    mainShadow.Parent = shadow
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.BackgroundColor3 = Theme.Main
+main.BorderSizePixel = 0
+main.Position = UDim2.new(0.345, 0, 0.291, 0)
+main.Size = UDim2.new(0, 500, 0, 350)
+main.Parent = unnamed
+main.ClipsDescendants = true
 
-    local main = Instance.new("Frame")
-    main.Name = "Main"
-    main.BackgroundColor3 = Theme.Main
-    main.BorderSizePixel = 0
-    main.Position = UDim2.new(0.345, 0, 0.291, 0)
-    main.Size = UDim2.new(0, 500, 0, 350)
-    main.Parent = unnamed
-    main.ClipsDescendants = true
+local uICorner = Instance.new("UICorner")
+uICorner.Name = "UICorner"
+uICorner.CornerRadius = UDim.new(0, 3)
+uICorner.Parent = main
 
-    local uICorner = Instance.new("UICorner")
-    uICorner.Name = "UICorner"
-    uICorner.CornerRadius = UDim.new(0, 3)
-    uICorner.Parent = main
+local topbar = Instance.new("Frame")
+topbar.Name = "Topbar"
+topbar.BackgroundColor3 = Theme.Topbar
+topbar.BorderSizePixel = 0
+topbar.Size = UDim2.new(0, 500, 0, 34)
+topbar.Parent = main
 
-    local topbar = Instance.new("Frame")
-    topbar.Name = "Topbar"
-    topbar.BackgroundColor3 = Theme.Topbar
-    topbar.BorderSizePixel = 0
-    topbar.Size = UDim2.new(0, 500, 0, 34)
-    topbar.Parent = main
+local dragging
+local dragInput
+local dragStart
+local startPos
 
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
+local function update(input)
+local delta = input.Position - dragStart
+main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+mainShadow.Position = UDim2.new(startPos.X.Scale, (startPos.X.Offset + delta.X) - 10, startPos.Y.Scale, (startPos.Y.Offset + delta.Y) - 10)
+end
 
-    local function update(input)
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        mainShadow.Position = UDim2.new(startPos.X.Scale, (startPos.X.Offset + delta.X) - 10, startPos.Y.Scale, (startPos.Y.Offset + delta.Y) - 10)
-    end
+topbar.InputBegan:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = true
+dragStart = input.Position
+startPos = main.Position
 
-    topbar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = main.Position
+input.Changed:Connect(function()
+if input.UserInputState == Enum.UserInputState.End then
+dragging = false
+end
+end)
+end
+end)
 
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
+topbar.InputChanged:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+dragInput = input
+end
+end)
 
-    topbar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
+UserInputService.InputChanged:Connect(function(input)
+if input == dragInput and dragging then
+update(input)
+end
+end)
 
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
+local uICorner1 = Instance.new("UICorner")
+uICorner1.Name = "UICorner"
+uICorner1.CornerRadius = UDim.new(0, 3)
+uICorner1.Parent = topbar
 
-    local uICorner1 = Instance.new("UICorner")
-    uICorner1.Name = "UICorner"
-    uICorner1.CornerRadius = UDim.new(0, 3)
-    uICorner1.Parent = topbar
+local topbarLine = Instance.new("Frame")
+topbarLine.Name = "TopbarLine"
+topbarLine.AnchorPoint = Vector2.new(0.5, 1)
+topbarLine.BackgroundColor3 = Theme.Lines
+topbarLine.BorderSizePixel = 0
+topbarLine.Position = UDim2.new(0.5, 0, 1, 0)
+topbarLine.Size = UDim2.new(0, 500, 0, 1)
+topbarLine.ZIndex = 2
+topbarLine.Parent = topbar
 
-    local topbarLine = Instance.new("Frame")
-    topbarLine.Name = "TopbarLine"
-    topbarLine.AnchorPoint = Vector2.new(0.5, 1)
-    topbarLine.BackgroundColor3 = Theme.Lines
-    topbarLine.BorderSizePixel = 0
-    topbarLine.Position = UDim2.new(0.5, 0, 1, 0)
-    topbarLine.Size = UDim2.new(0, 500, 0, 1)
-    topbarLine.ZIndex = 2
-    topbarLine.Parent = topbar
+local windowName = Instance.new("TextLabel")
+windowName.Name = "WindowName"
+windowName.Font = Enum.Font.GothamBold
+windowName.Text = Info.Text
+windowName.TextColor3 = Color3.fromRGB(255, 255, 255)
+windowName.TextSize = 13
+windowName.TextTransparency = 0.1
+windowName.TextXAlignment = Enum.TextXAlignment.Left
+windowName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+windowName.BackgroundTransparency = 1
+windowName.Position = UDim2.new(0, 6, 0, 0)
+windowName.Size = UDim2.new(0, 418, 0, 34)
+windowName.Parent = topbar
 
-    local windowName = Instance.new("TextLabel")
-    windowName.Name = "WindowName"
-    windowName.Font = Enum.Font.GothamBold
-    windowName.Text = Info.Text
-    windowName.TextColor3 = Color3.fromRGB(255, 255, 255)
-    windowName.TextSize = 13
-    windowName.TextTransparency = 0.1
-    windowName.TextXAlignment = Enum.TextXAlignment.Left
-    windowName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    windowName.BackgroundTransparency = 1
-    windowName.Position = UDim2.new(0, 6, 0, 0)
-    windowName.Size = UDim2.new(0, 418, 0, 34)
-    windowName.Parent = topbar
+local closeButton = Instance.new("ImageButton")
+closeButton.Name = "CloseButton"
+closeButton.Image = "rbxassetid://10738425363"
+closeButton.ImageTransparency = 0.1
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.BackgroundTransparency = 1
+closeButton.Position = UDim2.new(0.954, 3, 0.235, 0)
+closeButton.Size = UDim2.new(0, 17, 0, 17)
+closeButton.Parent = topbar
 
-    local closeButton = Instance.new("ImageButton")
-    closeButton.Name = "CloseButton"
-    closeButton.Image = "rbxassetid://10738425363"
-    closeButton.ImageTransparency = 0.1
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.BackgroundTransparency = 1
-    closeButton.Position = UDim2.new(0.954, 3, 0.235, 0)
-    closeButton.Size = UDim2.new(0, 17, 0, 17)
-    closeButton.Parent = topbar
+closeButton.MouseEnter:Connect(function()
+TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 66, 66)}):Play()
+end)
 
-    closeButton.MouseEnter:Connect(function()
-        TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 66, 66)}):Play()
-    end)
+closeButton.MouseLeave:Connect(function()
+TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+end)
 
-    closeButton.MouseLeave:Connect(function()
-        TweenService:Create(closeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-    end)
+closeButton.MouseButton1Click:Connect(function()
+unnamed:Destroy()
+shadow:Destroy()
+notifications:Destroy()
+end)
 
-    closeButton.MouseButton1Click:Connect(function()
-        unnamed:Destroy()
-        shadow:Destroy()
-        notifications:Destroy()
-    end)
+local minimizeButton = Instance.new("ImageButton")
+minimizeButton.Name = "ImageButton"
+minimizeButton.Image = "rbxassetid://10664064072"
+minimizeButton.ImageTransparency = 0.1
+minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+minimizeButton.BackgroundTransparency = 1
+minimizeButton.Position = UDim2.new(0.954, -18, 0.235, 0)
+minimizeButton.Size = UDim2.new(0, 17, 0, 17)
+minimizeButton.Parent = topbar
 
-    local minimizeButton = Instance.new("ImageButton")
-    minimizeButton.Name = "ImageButton"
-    minimizeButton.Image = "rbxassetid://10664064072"
-    minimizeButton.ImageTransparency = 0.1
-    minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    minimizeButton.BackgroundTransparency = 1
-    minimizeButton.Position = UDim2.new(0.954, -18, 0.235, 0)
-    minimizeButton.Size = UDim2.new(0, 17, 0, 17)
-    minimizeButton.Parent = topbar
+minimizeButton.MouseEnter:Connect(function()
+TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Theme.Highlight}):Play()
+end)
 
-    minimizeButton.MouseEnter:Connect(function()
-        TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Theme.Highlight}):Play()
-    end)
+minimizeButton.MouseLeave:Connect(function()
+TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+end)
 
-    minimizeButton.MouseLeave:Connect(function()
-        TweenService:Create(minimizeButton, TweenInfo.new(.125, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-    end)
+--Custom Minimize Feature
+local ImageToMinimize = Instance.new("ImageButton")
+--ImageToMinimize.Image = "rbxassetid://10664064072" -- Palitan mo to sa image id mo
+ImageToMinimize.Name = "ImageToMinimize"
+ImageToMinimize.Size = UDim2.new(0,50,0,50)
+ImageToMinimize.BackgroundColor3 = Color3.fromRGB(255,255,255)
+ImageToMinimize.BackgroundTransparency = 1
+ImageToMinimize.Position = UDim2.new(0.5,0,0.5,0) -- Pwede mo palitan kung saan mo gusto
+ImageToMinimize.ZIndex = 5
+ImageToMinimize.Visible = false -- Naka hide by default
+ImageToMinimize.Parent = CoreGui
 
-    --Custom Minimize Feature
-    local ImageToMinimize = Instance.new("ImageButton")
-    --ImageToMinimize.Image = "rbxassetid://idhere" -- Palitan mo to sa image id mo
-    ImageToMinimize.Name = "ImageToMinimize"
-    ImageToMinimize.Size = UDim2.new(0,50,0,50)
-    ImageToMinimize.BackgroundColor3 = Color3.fromRGB(255,255,255)
-    ImageToMinimize.BackgroundTransparency = 1
-    ImageToMinimize.Position = UDim2.new(0.5,0,0.5,0) -- Pwede mo palitan kung saan mo gusto
-    ImageToMinimize.ZIndex = 5
-    ImageToMinimize.Visible = false -- Naka hide by default
-    ImageToMinimize.Parent = CoreGui
+local Minimized = false
+local function ToggleWindowVisibility()
+Minimized = not Minimized
+unnamed.Enabled = not Minimized
+shadow.Enabled = not Minimized
+ImageToMinimize.Visible = Minimized
+notifications:Destroy()
+end
 
-    local Minimized = false
-    local function ToggleWindowVisibility()
-        Minimized = not Minimized
-        unnamed.Enabled = not Minimized
-        shadow.Enabled = not Minimized
-        ImageToMinimize.Visible = Minimized
-		notifications:Destroy()
-    end
+minimizeButton.MouseButton1Click:Connect(ToggleWindowVisibility)
 
-    minimizeButton.MouseButton1Click:Connect(ToggleWindowVisibility)
+ImageToMinimize.MouseButton1Click:Connect(ToggleWindowVisibility)
 
-    ImageToMinimize.MouseButton1Click:Connect(ToggleWindowVisibility)
+local uIStroke = Instance.new("UIStroke")
+uIStroke.Name = "UIStroke"
+uIStroke.Color = Theme.MainUIStroke
+uIStroke.Parent = main
 
-    local uIStroke = Instance.new("UIStroke")
-    uIStroke.Name = "UIStroke"
-    uIStroke.Color = Theme.MainUIStroke
-    uIStroke.Parent = main
 
 function window:Tab(Info)
 Info.Text = Info.Text or "Tab"
