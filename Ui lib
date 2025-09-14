@@ -457,7 +457,7 @@ windowName.Parent = topbar
 
 local closeButton = Instance.new("ImageButton")
 closeButton.Name = "CloseButton"
-closeButton.Image = "rbxassetid://10738425363"
+closeButton.Image = "rbxassetid://122134763561725"
 closeButton.ImageTransparency = 0.1
 closeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.BackgroundTransparency = 1
